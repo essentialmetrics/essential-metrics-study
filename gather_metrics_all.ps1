@@ -26,3 +26,5 @@ Set-Location C:\opt\essential-metrics
 & "C:\\opt\\essential-metrics\\virtual-env\\Scripts\\python.exe" "C:\opt\essential-metrics\EM_19_usb_attached.py"
 & "C:\\opt\\essential-metrics\\virtual-env\\Scripts\\python.exe" "C:\opt\essential-metrics\EM_20_admin_logins.py"
 & "C:\\opt\\essential-metrics\\virtual-env\\Scripts\\python.exe" "C:\opt\essential-metrics\EM_20_users_and_groups.py"
+
+& "C:\\opt\\essential-metrics\\virtual-env\\Scripts\\python.exe" "C:\opt\essential-metrics\collect_system_metrics.py"
