@@ -18,7 +18,7 @@ logger = configure_logger(__name__)
 
 def firewall_enabled_subplot(em_3_firewall_enabled):
     try:
-        em_3_firewall_enabled['Enabled'] = em_3_firewall_enabled['Enabled'].replace({'True': 1, 'False': 0})
+        em_3_firewall_enabled['Enabled'] = em_3_firewall_enabled['Enabled'].map({'True': 1, 'False': 0})
         em_3_firewall_enabled['created_at'] = pd.to_datetime(em_3_firewall_enabled['created_at'])
 
         df_domain = em_3_firewall_enabled[em_3_firewall_enabled['Profile'] == 'Domain']
@@ -134,6 +134,7 @@ layout = html.Div([
 )
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
 
@@ -143,6 +144,7 @@ def toggle_modal(n1, n2, is_open):
 )
 def launch_exe(n_clicks):
     if n_clicks > 0:
+        logger.info(f'{model_id} Manage button pressed')
         try:
             cf.run_subprocess_command('wf.msc')
             return "Launched successfully."

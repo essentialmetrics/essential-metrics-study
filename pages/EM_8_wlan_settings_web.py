@@ -116,6 +116,7 @@ layout = html.Div([
 )
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} WiFi Help button pressed')
         return not is_open
     return is_open
 
@@ -126,5 +127,6 @@ def toggle_modal(n1, n2, is_open):
 )
 def toggle_router_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} Router Help button pressed')
         return not is_open
     return is_open

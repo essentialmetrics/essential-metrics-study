@@ -48,7 +48,7 @@ layout = html.Div([
         'top': '10px',
         'right': '10px'
     }),
-    dbc.Button("Manage Password Policy", id=f"{model_id}-manage", n_clicks=0, style= {
+    dbc.Button("Manage Password Policy", id=f"{model_id}-manage", color="success", n_clicks=0, style= {
         'width': '200px',
         'height': '56px',
         'position': 'absolute',
@@ -134,30 +134,6 @@ layout = html.Div([
     ]),
 ])
 
-
-@callback(
-    Output(model_id, "is_open"),
-    [Input(f"{model_id}-open-model", "n_clicks"), Input(f"{model_id}-close-modal", "n_clicks")],
-    [State(model_id, "is_open")],
-)
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
-    return is_open
-
-@callback(
-    Output(f"{model_id}-hidden-output", "children"),
-    [Input(f"{model_id}-manage", "n_clicks")]
-)
-def launch_exe(n_clicks):
-    if n_clicks > 0:
-        try:
-            cf.run_powershell_command('secpol.msc')
-            return "Launched successfully."
-        except Exception as e:
-            return f"Error: {e}"
-    return ""
-
 # Callback to update password strength and crack time
 @callback(
     [Output('password-strength', 'children'),
@@ -189,3 +165,30 @@ def update_password_metrics(value):
     )
 
     return [html.Div(f'Strength score: {score}/4. {feedback}', style={'color': color}), crack_time_info]
+
+
+@callback(
+    Output(model_id, "is_open"),
+    [Input(f"{model_id}-open-model", "n_clicks"), Input(f"{model_id}-close-modal", "n_clicks")],
+    [State(model_id, "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        logger.info(f'{model_id} Help button pressed')
+        return not is_open
+    return is_open
+
+
+@callback(
+    Output(f"{model_id}-hidden-output", "children"),
+    [Input(f"{model_id}-manage", "n_clicks")]
+)
+def launch_exe(n_clicks):
+    if n_clicks > 0:
+        logger.info(f'{model_id} Manage button pressed')
+        try:
+            cf.run_powershell_command('secpol.msc')
+            return "Launched successfully."
+        except Exception as e:
+            return f"Error: {e}"
+    return ""

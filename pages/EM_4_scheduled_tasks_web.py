@@ -22,7 +22,6 @@ logger = configure_logger(__name__)
 def read_scheduled_tasks():
     try:
         with DatabaseManager() as db:
-            logger.info("Reading all from the em_4_scheduled_tasks SQL table")
             return(pd.read_sql_query("SELECT * FROM em_4_scheduled_tasks", db.conn))
     except Exception as e:
         logger.error(f'Reading all from the em_4_scheduled_tasks table failed')
@@ -31,7 +30,6 @@ def read_scheduled_tasks():
 def read_scheduled_tasks_decom():
     try:
         with DatabaseManager() as db:
-            logger.info("Reading all from the em_4_scheduled_tasks SQL table")
             return(pd.read_sql_query("SELECT * FROM em_4_scheduled_tasks_decommissioned", db.conn))
     except Exception as e:
         logger.error(f'Reading all from the em_4_scheduled_tasks table failed')
@@ -122,6 +120,7 @@ layout = html.Div([
 )
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
 
@@ -132,6 +131,7 @@ def toggle_modal(n1, n2, is_open):
 )
 def launch_exe(n_clicks):
     if n_clicks > 0:
+        logger.info(f'{model_id} Manage button pressed')
         try:
             # Replace 'path_to_exe' with the actual path to your .exe file
             cf.run_subprocess_command('C:\\opt\\essential-metrics\\tools\\TaskSchedulerView.exe')

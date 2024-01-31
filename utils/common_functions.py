@@ -264,7 +264,11 @@ def sort_port_scan_data(port_scan_results):
                 MAC = port_scan_results[ip]['addresses']['mac']
             else:
                 logger.debug(f"MAC not found during nmap scan for: {port_scan_results[ip]['addresses']['ipv4']}, running ARP scan to get it")
-                MAC = run_arp_sweep(port_scan_results[ip]['addresses']['ipv4'], return_type='mac').upper()
+                try:
+                    MAC = run_arp_sweep(port_scan_results[ip]['addresses']['ipv4'], return_type='mac').upper()
+                except Exception as e:
+                    logger.debug(f'Could not get the MAC with an ARP sweep, this is usually because of a VM')
+                    MAC = port_scan_results[ip]['addresses']['ipv4']
             if 'vendor' in port_scan_results[ip]:
                 vendor_values = list(port_scan_results[ip]['vendor'].values())
                 if vendor_values:

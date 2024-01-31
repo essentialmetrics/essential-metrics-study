@@ -22,7 +22,6 @@ logger = configure_logger(__name__)
 def read_software_register():
     try:
         with DatabaseManager() as db:
-            logger.info("Reading all from the software_register SQL table")
             return(pd.read_sql_query("SELECT * FROM em_2_software_register", db.conn))
     except Exception as e:
         logger.error(f'Reading all from the software_register table failed')
@@ -271,6 +270,7 @@ layout = html.Div([
 )
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
 
@@ -281,6 +281,7 @@ def toggle_modal(n1, n2, is_open):
 )
 def launch_exe(n_clicks):
     if n_clicks > 0:
+        logger.info(f'{model_id} Manage button pressed')
         try:
             cf.popen_subprocess_command('control appwiz.cpl')
             return ""

@@ -3,6 +3,10 @@
 from dash import html, Input, Output, dcc, State
 import dash_bootstrap_components as dbc
 
+from utils.logger_config  import configure_logger
+
+logger = configure_logger(__name__)
+
 from app import app
 server = app.server
 
@@ -153,8 +157,10 @@ app.layout = html.Div([dcc.Location(id='url', refresh=False),
                        html.Div(id='page-content')
                        ])
 
+
 @app.callback(Output('page-content', 'children'), [Input('url', 'pathname')])
 def display_page(pathname):
+    logger.info(f'Page visited: {pathname}')
     if pathname == '/home':
         return home.layout
     elif pathname == '/study_data':

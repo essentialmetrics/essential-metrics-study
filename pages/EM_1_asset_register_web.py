@@ -9,6 +9,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from ping3 import ping
 from scapy.all import ARP, Ether, srp
+import dash_bootstrap_components as dbc
 
 import utils.common_graph_functions as cgf
 import EM_1_asset_register as ar
@@ -97,9 +98,6 @@ def calculate_metric_totals(em_1_asset_register, em_1_named_asset_register):
     asset_subplot.add_trace(go.Indicator(mode='number', value=len(em_1_named_asset_register.index), title={'text': f'Total number of assets named'}), row=2, col=2)
     
     return(asset_subplot)
-
-import dash_bootstrap_components as dbc
-
 
 
 model_id = 'em_1_asset_register'
@@ -322,5 +320,6 @@ def display_table(n_clicks):
 )
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
