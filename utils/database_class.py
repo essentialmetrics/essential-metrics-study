@@ -84,7 +84,7 @@ class DatabaseManager:
                     logger.info(f'Retrying read of {table}, Attempt {attempt + 2}/{retry_count}')
                     time.sleep(delay) 
                 else:
-                    logger.error('All retry attempts failed, while trying to read: {table}')
+                    logger.error(f'All retry attempts failed, while trying to read: {table}')
                     return pd.DataFrame()
 
 
@@ -1031,4 +1031,4 @@ if __name__ == "__main__":
     
 
     # uncomment this when going live
-    #app_install_date()
+    app_install_date()

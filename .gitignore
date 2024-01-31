@@ -1,0 +1,8 @@
+*.log
+__pycache__/
+essential-metrics.db
+study-metrics.db
+essential-metrics.log
+python_errors.log
+.vscode
+virtual-env
