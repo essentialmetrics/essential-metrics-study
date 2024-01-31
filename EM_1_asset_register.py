@@ -15,8 +15,6 @@ from utils.logger_config import configure_logger
 logger = configure_logger(__name__)
 from utils.database_class import DatabaseManager
 
-logger.info(f'Gathering asset register data')
-
 def get_default_gateway():
     '''
     This function will get the default gateway from the routing table
@@ -221,6 +219,7 @@ def run_port_scan():
     
 
 if __name__ == "__main__":
+    logger.info(f'Gathering asset register data')
     cf.check_data_freshness('em_16_internal_ports_heatmap', days=3)
-    logger.info(f'Finished gathering asset register data')
     run_port_scan()
+    logger.info(f'Finished gathering asset register data')

@@ -256,20 +256,6 @@ layout = html.Div([
 )
 def toggle_modal(n1, n2, is_open):
     if n1 or n2:
+        logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
-
-@callback(
-    Output(f"{model_id}-hidden-output", "children"),
-    [Input(f"{model_id}-help", "n_clicks")]
-)
-def launch_exe(n_clicks):
-    if n_clicks > 0:
-        try:
-            cf.run_powershell_command('Start-Process "windowsdefender://threat"')
-            return "Launched successfully."
-        except Exception as e:
-            return f"Error: {e}"
-    return ""
-
-
