@@ -8,6 +8,7 @@ server = app.server
 
 from pages import (
     home,
+    study_metrics_web,
     EM_1_asset_register_web, 
     EM_2_software_register_web, 
     EM_3_firewall_web,
@@ -25,7 +26,6 @@ from pages import (
     EM_18_rdp_settings_web,
     EM_19_usb_attached_web,
     EM_20_admin_logins_web
-    #EM_21_phishing_training_web
     )
 
 inventory_dropdown = dbc.DropdownMenu(
@@ -63,10 +63,6 @@ metrics_dropdown = dbc.DropdownMenu(
     label="Explore System Metrics",
 )
 
-# 
-# 
-
-
 advice_dropdown = dbc.DropdownMenu(
     children=[
         dbc.DropdownMenuItem("Home", href='/home'),
@@ -76,6 +72,16 @@ advice_dropdown = dbc.DropdownMenu(
     nav = True,
     in_navbar=True,
     label="Explore Advice and Training",
+)
+
+study_metrics_dropdown = dbc.DropdownMenu(
+    children=[
+        dbc.DropdownMenuItem("Home", href='/home'),
+        dbc.DropdownMenuItem("Study Data", href='/study_data'),
+    ],
+    nav = True,
+    in_navbar=True,
+    label="Explore Study Metrics",
 )
 
 
@@ -115,6 +121,14 @@ navbar = dbc.Navbar(
                 id="advice_dropdown",
                 navbar=True,
             ),
+            dbc.NavbarToggler(id='study-dropdown'),
+            dbc.Collapse(
+                dbc.Nav(
+                    [study_metrics_dropdown], navbar=True
+                ),
+                id="study_metrics_dropdown",
+                navbar=True,
+            ),
         ],
     ),
     color="dark",
@@ -143,6 +157,8 @@ app.layout = html.Div([dcc.Location(id='url', refresh=False),
 def display_page(pathname):
     if pathname == '/home':
         return home.layout
+    elif pathname == '/study_data':
+        return study_metrics_web.layout
     elif pathname == '/asset_register':
         return EM_1_asset_register_web.layout
     elif pathname == '/software_register':

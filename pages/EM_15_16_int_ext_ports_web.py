@@ -168,7 +168,7 @@ def generate_network_graph(df, gateway):
         return(fig)
     except Exception as e:
         logger.error(f'The network graph graph could not be rendered, sending back generic graph: {e}')
-        cgf.set_no_results_found_figure()
+        return(cgf.set_no_results_found_figure())
 
 
 

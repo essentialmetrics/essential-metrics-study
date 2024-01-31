@@ -1,4 +1,6 @@
-# This script will run every hour to gather metrics on the system.
+# This script will setup the database tables and run each script sequentially thereafter.
+# It will finally run the collect_system_metrics script which will gather metrics for our study.
+
 Set-Location C:\opt\essential-metrics
 
 & "C:\\opt\\essential-metrics\\virtual-env\\Scripts\\python.exe" "C:\opt\essential-metrics\utils\database_class.py"
