@@ -1039,6 +1039,4 @@ if __name__ == "__main__":
     create_table('study-metrics.db', 'em_20_users', s_em_20_users_sql)
     create_table('study-metrics.db', 'em_20_admin_logins', s_em_20_admin_logins_sql)
     
-
-    # uncomment this when going live
     app_install_date()

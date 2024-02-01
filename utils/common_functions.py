@@ -1,3 +1,5 @@
+# These are common functions used by many different python scripts
+
 import subprocess
 import sys
 import nmap
@@ -7,7 +9,6 @@ import wmi
 from scapy.all import ARP, Ether, srp
 from datetime import datetime
 
-# This is a hack for my bad programming and should be fixed, there is a circular import I did not have time to fix
 from .logger_config import configure_logger
 from .database_class import DatabaseManager
 
