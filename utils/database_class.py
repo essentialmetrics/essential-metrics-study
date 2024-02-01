@@ -764,6 +764,15 @@ s_em_3_firewall_rules = '''
     )
 '''
 
+s_em_3_firewall_enabled = '''
+    CREATE TABLE IF NOT EXISTS em_3_firewall_enabled (
+        Profile TEXT,
+        Enabled TEXT,
+        created_at TEXT,
+        added_on DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+'''
+
 s_em_4_scheduled_tasks = '''
     CREATE TABLE IF NOT EXISTS em_4_scheduled_tasks (
         enabled TEXT,
@@ -1010,6 +1019,7 @@ if __name__ == "__main__":
     create_table('study-metrics.db', 'em_1_named_asset_register', s_em_1_named_asset_register_sql)
     create_table('study-metrics.db', 'em_2_software_register', s_em_2_software_register_sql)
     create_table('study-metrics.db', 'em_3_firewall_rules', s_em_3_firewall_rules)
+    create_table('study-metrics.db', 'em_3_firewall_enabled', s_em_3_firewall_enabled)
     create_table('study-metrics.db', 'em_4_scheduled_tasks', s_em_4_scheduled_tasks)
     create_table('study-metrics.db', 'em_5_enabled_services', s_em_5_enabled_services)
     create_table('study-metrics.db', 'em_6_defender_updates', s_em_6_defender_updates)

@@ -73,9 +73,7 @@ def get_all_subnets(ipconfig):
         # ip_address = ipaddress.IPv4Address(ip)
         subnet = ipaddress.IPv4Network(f'{ip}/{subnet_mask}', strict=False)
         
-        # Print the calculated subnet
         ipv4_routes[ip] = str(subnet)
-        print(f'IP Address: {ip}, Subnet: {subnet}')
     
     all_subnets = ' '.join(list(ipv4_routes.values()))
     return(all_subnets)

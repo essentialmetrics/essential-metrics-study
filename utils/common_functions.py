@@ -27,7 +27,6 @@ def run_subprocess_command(command: str) -> str:
     """
     try:
         result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode("utf-8")
-        print(result)
         return result
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running subprocess command '{command}': {e}")
