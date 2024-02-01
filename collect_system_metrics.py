@@ -139,6 +139,36 @@ def collect_em_3_metrics():
         logger.error(f'Could not collect EM 3 metrics: {e}')
 
 
+def collect_em_3_firewall_enabled():
+    logger.info('Collecting EM 3 firewall enabled study metrics')
+    try:
+        with DatabaseManager() as db:
+            df = db.read_database_table('em_3_firewall_enabled')
+            
+        unique_changes = pd.DataFrame(columns=df.columns)
+        rows_to_add = []
+        
+        for profile in df['Profile'].unique():
+            profile_df = df[df['Profile'] == profile].copy()
+            profile_df.sort_values(by='created_at', inplace=True)
+            last_status = None
+            
+            for index, row in profile_df.iterrows():
+                if row['Enabled'] != last_status:
+                    rows_to_add.append(row)
+                    last_status = row['Enabled']
+        
+        unique_changes = pd.concat([unique_changes, pd.DataFrame(rows_to_add)], ignore_index=True)
+        import pdb; pdb.set_trace()
+        
+        with DatabaseManager(database_name='study-metrics.db') as db:
+            db.add_new_rows('em_3_firewall_enabled', unique_changes, list(df.keys()))
+        
+        logger.info('Finished collecting EM 3 firewall enabled study metrics')
+    except Exception as e:
+        logger.error(f'Could not collect EM 3 firewall enabled metrics: {e}')
+
+
 def collect_em_4_metrics():
     logger.info('Collecting EM 4 study metrics')
     try:
@@ -377,6 +407,7 @@ collect_aggregate_count('em_1_asset_register')
 collect_aggregate_count('em_1_named_asset_register')
 collect_em_2_metrics()
 collect_em_3_metrics()
+collect_em_3_firewall_enabled()
 collect_em_4_metrics()
 collect_em_5_metrics()
 

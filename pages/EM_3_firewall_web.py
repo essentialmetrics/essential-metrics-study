@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # EM-3 - Firewall dashboard webpage which displays the data captured by EM_3_firewall
-# https://www.youtube.com/watch?v=b5YODEKsOrA
 
 from dash.dependencies import Input, Output, State
 import pandas as pd
@@ -53,8 +52,7 @@ with DatabaseManager() as db:
 firewall_enabled = firewall_enabled_subplot(em_3_firewall_enabled)
 
 model_id = 'em_3_firewall'
-training_modal_graph = cgf.training_modal(model_id, 'Firewall Rules Management', 'https://www.youtube.com/embed/b5YODEKsOrA?si=23f_L7PmXjmB2f4U')
-
+training_modal_graph = cgf.training_modal(model_id, 'Firewall Rules Management', 'https://www.youtube-nocookie.com/embed/b5YODEKsOrA?si=nGb1-RjSDzh25fx8')
 firewall_rules_over_time = cgf.generate_line_graph_decoms(em_3_firewall_rules, em_3_firewall_rules_decommissioned, title='Firewall Rules found on system over time', yaxis='Total Firewall Rules')
 
 layout = html.Div([
@@ -75,55 +73,17 @@ layout = html.Div([
         }),
     html.Br(),
     html.P([
-        'Firewall rules manage the connections to and from your system, they should always be enabled',
+        'Firewall rules manage the connections to and from your system, they should always be enabled.',
+        html.Br(),
+        'If you see any of these firewalls disabled it could be a sign something nefarious could be happening on your system.',
         html.Div([dcc.Graph(figure=firewall_enabled)])],
         style={'textAlign': 'center'}
     ),
     html.Div([dcc.Graph(figure=firewall_rules_over_time)]),
     html.Div(id=f"{model_id}-hidden-output", style={"display": "none"}),
     training_modal_graph,
-    dcc.Loading(id='loading-firewall-rules', type='default', children = [
-        dash_table.DataTable(
-            id='firewall-rules',
-            style_cell=dict(textAlign='left', maxWidth='500px'),
-            style_table={
-                'overflow-y': 'hidden',
-                'overflow-x': 'auto',
-            },
-            css=[{
-                'selector': '.dash-spreadsheet td div',
-                'rule': '''
-                line-height: 15px,
-                max-height: 30px, min-height: 30px, height: 30px;
-                display: block;
-                overflow-y: hidden;
-                '''
-            }],
-            export_format='csv',
-            columns=[
-            {'name': 'Name', 'id': 'Name'},
-            {'name': 'Display Name', 'id': 'DisplayName'},
-            {'name': 'Description', 'id': 'Description'},
-            {'name': 'Display Group', 'id': 'DisplayGroup'},
-            {'name': 'Enabled', 'id': 'Enabled'},
-            {'name': 'Profile', 'id': 'Profile'},
-            {'name': 'Direction', 'id': 'Direction'},
-            {'name': 'Action', 'id': 'Action'},
-            {'name': 'Captured at', 'id': 'created_at'},
-            ],
-            data=em_3_firewall_rules.to_dict('records'),
-            tooltip_data=[
-                {column: {'value': str(value), 'type': 'markdown'} for column, value in row.items()}
-                for row in em_3_firewall_rules.to_dict('records')
-            ],
-            tooltip_duration=None,  # Disable automatic hiding of tooltips
-            sort_action='native',
-            sort_mode='single',
-            filter_action='native',
-            sort_by=[{'column_id': 'captured_at', 'direction': 'asc'}],
-            page_size=10,
-        ),
-    ]),
+    html.H4("These are all the firewall rules currently on your system", style={'textAlign': 'center'}),
+    cgf.generate_dash_table(em_3_firewall_rules, 'em_3_firewall_rules'),
 ])
 
 

@@ -42,6 +42,15 @@ If you have any questions or concerns about any of these metrics or the collecti
 |  2 |       477 |        287 | 2024-01-24 02:05:33 |
 |  3 |       477 |        287 | 2024-01-25 01:31:47 |
 
+### em_3_firewall_enabled table
+|    | Profile   | Enabled   | created_at          |
+|---:|:----------|:----------|:--------------------|
+|  0 | Domain    | True      | 2024-01-31 00:21:46 |
+|  1 | Private   | True      | 2024-01-31 00:21:46 |
+|  2 | Public    | True      | 2024-01-31 00:21:46 |
+|  3 | Public    | False     | 2024-01-31 23:36:30 |
+|  4 | Public    | True      | 2024-02-01 00:36:30 |
+
 ### em_4_scheduled_tasks table
 
 |    |   enabled |   disabled | added_on            |
