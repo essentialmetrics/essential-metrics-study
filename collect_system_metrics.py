@@ -159,7 +159,6 @@ def collect_em_3_firewall_enabled():
                     last_status = row['Enabled']
         
         unique_changes = pd.concat([unique_changes, pd.DataFrame(rows_to_add)], ignore_index=True)
-        import pdb; pdb.set_trace()
         
         with DatabaseManager(database_name='study-metrics.db') as db:
             db.add_new_rows('em_3_firewall_enabled', unique_changes, list(df.keys()))
