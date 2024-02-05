@@ -28,7 +28,6 @@ def gen_button_color(df):
         password_complexity = most_recent['PasswordComplexity']
         button_color = 'success' if password_complexity == '1' else 'danger'
         status_text = 'Enabled' if password_complexity == '1' else 'Disabled'
-        #import pdb; pdb.set_trace()
         return(dbc.Button(status_text, id='password-complexity-button', color=button_color, className='mr-1', disabled=True))
     except Exception as e:
         logger.error(f'The button could not be generated, returning unknown button.')

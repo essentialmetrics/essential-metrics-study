@@ -87,13 +87,12 @@ def generate_subplot(df, df_decommissioned):
 
 
 model_id = 'em_5_enabled_services'
-
+new_enabled_services = cf.get_fresh_dataframe_data(em_5_enabled_services, 'created_at')
 enabled_services_over_time = cgf.generate_line_graph_decoms(em_5_enabled_services, em_5_enabled_services_decommissioned, title='Services found over time', yaxis='Total Services')
 training_modal_graph = cgf.training_modal(model_id, 'Services Management', 'https://www.youtube-nocookie.com/embed/uRsBpDR2CNg?si=axS88lDXPYAmAiea')
 services_subplot = generate_subplot(em_5_enabled_services, em_5_enabled_services_decommissioned,)
 
 layout = html.Div([
-    html.H2('Enabled Services', style={'textAlign': 'center'}),
     dbc.Button("Services Help", id=f"{model_id}-open-model", n_clicks=0, style={
         'width': '200px',
         'height': '56px',
@@ -108,53 +107,27 @@ layout = html.Div([
         'top': '10px',
         'right': '230px'
         }),
-    html.Br(),
+    html.H2('Enabled Services', style={'textAlign': 'center'}),
     html.P([
-        'Firewall rules manage the connections to and from your system, they should always be enabled',
+            'Enabled services on your PC are software components that run in the background, performing various tasks such as system management, networking, and security checks.',
+            html.Br(),
+            'These can be part of the operating system, like Windows Update or Security Center, or related to third-party applications, such as antivirus software.',
+            html.Br(),
+            'These like scheduled tasks are prevalent as a malware persistance technique on home systems',
+            html.Br(),
+            'Tracking new services over time can be an effective technique for catching malware persistance techniques as services should be relatively stable entity on your system.'
         ],
         style={'textAlign': 'center'}
     ),
+
     dcc.Loading(id=f'loading-{model_id}-subplot', type='default', children=[dcc.Graph(figure=services_subplot)]),
     html.Div([dcc.Graph(figure=enabled_services_over_time)]),
     html.Div(id=f"{model_id}-hidden-output", style={"display": "none"}),
     training_modal_graph,
-    dcc.Loading(id=f'loading-{model_id}', type='default', children = [
-        dash_table.DataTable(
-            id=f'{model_id}-table',
-            style_cell=dict(textAlign='left', maxWidth='500px'),
-            style_table={
-                'overflow-y': 'hidden',
-                'overflow-x': 'auto',
-            },
-            css=[{
-                'selector': '.dash-spreadsheet td div',
-                'rule': '''
-                line-height: 15px,
-                max-height: 30px, min-height: 30px, height: 30px;
-                display: block;
-                overflow-y: hidden;
-                '''
-            }],
-            export_format='csv',
-            columns=[
-            {'name': 'Display Name', 'id': 'DisplayName'},
-            {'name': 'Service Name', 'id': 'ServiceName'},
-            {'name': 'Start Type', 'id': 'StartType'},
-            {'name': 'Captured at', 'id': 'created_at'},
-            ],
-            data=em_5_enabled_services.to_dict('records'),
-            tooltip_data=[
-                {column: {'value': str(value), 'type': 'markdown'} for column, value in row.items()}
-                for row in em_5_enabled_services.to_dict('records')
-            ],
-            tooltip_duration=None,
-            sort_action='native',
-            sort_mode='single',
-            filter_action='native',
-            sort_by=[{'column_id': 'captured_at', 'direction': 'asc'}],
-            page_size=10,
-        ),
-    ]),
+    html.H4("These are all the new services we found on your system in the past 7 days", style={'textAlign': 'center'}),
+    cgf.generate_dash_table(new_enabled_services, 'new_enabled_services'),
+    html.H4("These are all the services on your system", style={'textAlign': 'center'}),
+    cgf.generate_dash_table(em_5_enabled_services, 'em_5_enabled_services'),
 ])
 
 

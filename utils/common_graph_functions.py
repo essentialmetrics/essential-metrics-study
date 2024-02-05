@@ -107,7 +107,6 @@ def generate_line_graph_decoms(table, table_decomm, title='Elements found over t
             logger.debug("Today's date is found in the DataFrame.")
         
         # Plotting
-        #import pdb; pdb.set_trace()
         fig = px.line(combined, x='Date', y='Count', title=f'{last_count} {title}')
         fig.update_xaxes(title_text=xaxis).update_yaxes(title_text=yaxis)
         fig.update_layout(title={ 'x':0.5, 'xanchor': 'center', 'yanchor': 'top' })
@@ -212,9 +211,6 @@ def gen_button_1(display_text, metric, hyperlink=False,):
             'top': '10px',
             'right': '10px'
         })
-
-
-
 
 
 def gen_button_2(display_text, metric, hyperlink=False,):

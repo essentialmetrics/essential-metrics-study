@@ -33,7 +33,7 @@ def generate_rdp_subplot(df):
         fig.update_yaxes(tickvals=[0, 1], ticktext=['False', 'True'], row=1, col=1)
         fig.update_yaxes(tickvals=[0, 1], ticktext=['False', 'True'], row=2, col=1)
 
-        fig.update_layout(height=600, width=1900, title_text="RDP Settings enabled over time")
+        fig.update_layout(height=600, autosize=True, title_text="RDP Settings enabled over time")
         return(fig)
     except Exception as e:
         return(cgf.set_no_results_found_figure())
@@ -41,7 +41,7 @@ def generate_rdp_subplot(df):
 
 model_id = 'em_18_rdp_enabled'
 rdp_settings_enabled = generate_rdp_subplot(em_18_rdp_enabled)
-
+training_modal_graph = cgf.training_modal(model_id, 'Secure RDP Sessions', 'https://www.youtube-nocookie.com/embed/sax55mrOX54?si=cV8NYISdX0orRLrG')
 
 layout = html.Div([
     dbc.Button("RDP Help", id=f"{model_id}-open-model", n_clicks=0, style={
@@ -64,11 +64,17 @@ layout = html.Div([
         html.Br(),
         'Because of the remote management functionality inbuilt in RDP this is a common protocol used by attackers and as such should be disabled if not in use and should be used securely if needed.',
         html.Br(),
+        'If you use RDP in your network it is imperative that you use it securely, the video in RDP help above has good instructions to secure your RDP connection.',
+        html.Br(),
+        'You must also ensure that you have an account lockout policy as the video does not have that instruction.',
+        html.Br(),
+        'You can enable this in Local Security Policy -> Security Settings -> Account Policies -> Account Lockout policy -> Account Lockout Threshold',
         html.Div([dcc.Graph(figure=rdp_settings_enabled, style={'height': '600px', 'width': '100%'})]),
         ],
         style={'textAlign': 'center'}
     ),
     html.Div(id=f"{model_id}-hidden-output", style={"display": "none"}),
+    training_modal_graph,
     html.H4("These are the RDP settings and the users which are allowed to RDP to your system if it is enabled", style={'textAlign': 'center'}),
     dcc.Loading(id=f'loading-{model_id}-eicar', type='default', children = [
         cgf.generate_dash_table(em_18_rdp_enabled, 'em_18_rdp_enabled')

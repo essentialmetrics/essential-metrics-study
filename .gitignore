@@ -6,3 +6,4 @@ essential-metrics.log
 python_errors.log
 .vscode
 virtual-env
+TaskSchedulerView.cfg

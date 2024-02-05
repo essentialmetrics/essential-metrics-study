@@ -75,17 +75,31 @@ def gen_defender_enabled(df):
             for col in range(1, 4):
                 fig.update_yaxes(tickvals=[1], ticktext=['True'], row=row, col=col)
 
-        fig.update_layout(height=600, width=1900, title_text="Enabled Defender Services Over Time (This should always be enabled)")
+        fig.update_layout(height=600, autosize=True, title_text="Enabled Defender Services Over Time (This should always be enabled)")
         return(fig)
     except Exception as e:
         logger.error(f'The line chart could not be rendered, sending back generic error: {e}')
         cgf.set_no_results_found_figure()
 
 
+def get_full_scan_text(df):
+    try:
+        if int(df['FullScanAge'].tail(1).iloc[0]) < 182:
+            return(dcc.Markdown(f'Your last full scan of the system was: {df["FullScanAge"].tail(1).iloc[0]} days ago. **Good Job.**'))
+        elif int(df['FullScanAge'].tail(1).iloc[0]) == 4294967295:
+            return(dcc.Markdown('You have **never performed a full scan** of your system, we recommend performing this action to familiarize yourself with the scanning process.'))
+        else:
+            return(dcc.Markdown('Your last full scan was **over 6 months ago**, it might be time perform another full scan again.'))
+    except Exception as e:
+        logger.error(f'Could not get the full scan age, passing back generic message')
+        return(f'We could not determine when the last full scan was run on this system')
+
+
 model_id = 'em_6_defender_updates'
 training_modal_graph = cgf.training_modal(model_id, 'Defender Management', 'https://www.youtube-nocookie.com/embed/yXPWDAH1emo?si=0JCek1kWpDpP8Dqi')
 windows_updates = generate_line_updates(em_6_defender_updates)
 defender_enabled = gen_defender_enabled(em_6_defender_updates)
+full_scan = get_full_scan_text(em_6_defender_updates)
 
 layout = html.Div([
     html.H2('Defender Management', style={'textAlign': 'center'}),
@@ -96,7 +110,7 @@ layout = html.Div([
         'top': '10px',
         'right': '10px'
     }),
-    dbc.Button("Manage Defender", id=f"{model_id}-manage", n_clicks=0, style= {
+    dbc.Button("Manage Defender", id=f"{model_id}-manage", color="success", n_clicks=0, style= {
         'width': '200px',
         'height': '56px',
         'position': 'absolute',
@@ -107,7 +121,9 @@ layout = html.Div([
     html.P([
         'Microsoft Defender is an inbuilt antivirus and antimalware solution, if you do not have any other after market solution this should be always enabled.',
         html.Br(),
-        'If you notice this has ever been disabled this is an indication something may be interfering with your system security.'
+        'If you notice this has ever been disabled this is an indication something may be interfering with your system security.',
+        html.Br(),
+        full_scan,
         ],
         style={'textAlign': 'center'}
     ),

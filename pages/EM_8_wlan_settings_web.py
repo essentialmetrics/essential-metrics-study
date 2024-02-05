@@ -21,17 +21,7 @@ training_modal_graph = cgf.training_modal(model_id, 'WLAN Settings', 'https://ww
 router_settings_model = cgf.training_modal(f'{model_id}-router-settings', 'Router Settings', 'https://www.youtube-nocookie.com/embed/mJnIgjyjEtc?si=2Cx_VuZ0JXJDa4a7&amp;start=132')
 
 gateway_url = ar.get_default_gateway()
-hyperlink_button = html.A(
-    dbc.Button("Connect to Router", id=f"{model_id}-manage", n_clicks=0, style={
-        'width': '200px',
-        'height': '56px',
-        'position': 'absolute',
-        'top': '10px',
-        'right': '450px'
-    }),
-    href=f'http://{gateway_url}',
-    target="_blank"
-)
+
 
 layout = html.Div([
     html.H2('WiFi Management', style={'textAlign': 'center'}),
@@ -49,7 +39,18 @@ layout = html.Div([
         'top': '10px',
         'right': '230px'
     }),
-    hyperlink_button,
+    html.A(
+        dbc.Button("Connect to Router", id=f"{model_id}-manage", color="secondary", n_clicks=0, style={
+            'width': '200px',
+            'height': '56px',
+            'position': 'absolute',
+            'top': '10px',
+            'right': '450px'
+        }),
+        href=f'http://{gateway_url}',
+        target="_blank"
+    ),
+    html.Div(id=f'{model_id}-dummy-div', style={'display': 'none'}),
     html.Br(),
     html.P([
         'Your WiFi password is the frontdoor to your network and should be complex and not easily guessable.',
@@ -130,3 +131,13 @@ def toggle_router_modal(n1, n2, is_open):
         logger.info(f'{model_id} Router Help button pressed')
         return not is_open
     return is_open
+
+@callback(
+    Output(f'{model_id}-dummy-div', 'children'),
+    [Input(f"{model_id}-manage", "n_clicks")]
+)
+def toggle_modal(n_clicks):
+    if n_clicks > 0:
+        logger.info(f'{model_id} Connect to router pressed')
+        return ""
+    return ""

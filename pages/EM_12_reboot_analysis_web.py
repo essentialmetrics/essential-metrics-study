@@ -95,8 +95,8 @@ def patch_to_reboot_analysis(df, df_v):
         combined_df['UnifiedTime'] = combined_df['TimeGenerated'].fillna(combined_df['StartTime'])
         combined_df_sorted = combined_df.sort_values(by='UnifiedTime')
 
-        # This will find all consequative rows that are not unique in the 'Software' column
-        # this is necessary as I found multiple software versions without a coorosponding event ID 12 so these ned to be removed from the analysis as they cannot be paired
+        # This will find all consecutive rows that are not unique in the 'Software' column
+        # this is necessary as I found multiple software versions without a corresponding event ID 12 so these ned to be removed from the analysis as they cannot be paired
         mask = (
             (combined_df_sorted['Software'] != combined_df_sorted['Software'].shift()) &
             ~(combined_df_sorted['Software'].isna() & combined_df_sorted['Software'].shift().isna())
@@ -127,34 +127,27 @@ def patch_to_reboot_analysis(df, df_v):
 
         fig.update_layout(xaxis_tickangle=-45, xaxis_title='Software Update', yaxis_title='Install started -> reboot completed (Hours)')
 
-        return(fig)
+        return(fig, new_df['TimeDifferenceHours'].mean())
     except Exception as e:
         logger.error(f'The bar graph could not be rendered, sending back generic graph: {e}')
-        return(cgf.set_no_results_found_figure())
+        return(cgf.set_no_results_found_figure(), 0)
 
 
     
 model_id = 'em_12_reboot_analysis'
 training_modal_graph = cgf.training_modal(model_id, 'Reboot management', 'https://www.youtube-nocookie.com/embed/xtsNTwRg7iM?si=40yydd3SmHuglvlL')
 new_windows_version = generate_reboot_graph(em_12_kernel_versions)
-patch_reboot_analysis = patch_to_reboot_analysis(em_12_kernel_versions, em_11_vulnerability_patching)
+patch_reboot_analysis, mean_time_to_reboot = patch_to_reboot_analysis(em_12_kernel_versions, em_11_vulnerability_patching)
 
 
 layout = html.Div([
     html.H2('Patch Management (Reboot Analysis)', style={'textAlign': 'center'}),
-    dbc.Button("Patching Help", id=f"{model_id}-open-model", n_clicks=0, style={
-        'width': '200px',
-        'height': '56px',
-        'position': 'absolute',
-        'top': '10px',
-        'right': '10px'
-    }),
     dbc.Button("Manage Patching", id=f"{model_id}-manage", color="success", n_clicks=0, style= {
         'width': '200px',
         'height': '56px',
         'position': 'absolute',
         'top': '10px',
-        'right': '230px'
+        'right': '10px'
         }),
     html.Br(),
     html.P([
@@ -162,74 +155,27 @@ layout = html.Div([
         html.Br(),
         'This patches critical security bugs in the operating system and decreases your chances of harm from a vulnerability as the window of opportunity for an attacker is reduced.',
         html.Br(),
-        'These patches generally have security updates in them and are vital for keeping your system secure.',
+        f'Your Mean time to reboot, that is mean time from when you started installing a patch until you rebooted your system was:',
         html.Br(),
-        f'Your Mean time to patch, that is mean time from when you downloaded a patch until it was successfully installed was:',
-        html.Br(),
+        dcc.Markdown(f'**{mean_time_to_reboot} hours**')
         ],
         style={'textAlign': 'center'}
     ),
     html.Br(),
     html.Div([dcc.Graph(figure=new_windows_version, style={'height': '600px', 'width': '100%'})]),
-    html.Div([dcc.Graph(figure=patch_reboot_analysis, style={'height': '1000px', 'width': '100%'})]),
-    html.Br(),
     html.P([
-        'If you notice on the below graph that you have not been receiving updates recently (past month) this could be an indication there is an issue with your system patching.',
+        'This is your reboot timelines for each of your patching versions, lower is better here.',
         html.Br(),
-        'The Microsoft Defender Updates are very busy so you should see a lot of activity there, the Windows System update is your Monthly Patch Tuesday patches.',
-        html.Br(),
-        'The .NET Framework is less busy and the AntiMalware updates are only a few updates a year.',
-        ],
-        style={'textAlign': 'center'}
-    ),
+        'We recommend rebooting as close to the reboot prompt as possible to keep your system secure.',
+    ], style={'textAlign': 'center'}),
+    html.Div([dcc.Graph(figure=patch_reboot_analysis, style={'height': '1000px', 'width': '100%'})]),
     html.Br(),
     html.Div(id=f"{model_id}-hidden-output", style={"display": "none"}),
     training_modal_graph,
-    dcc.Loading(id=f'loading-{model_id}', type='default', children = [
-        dash_table.DataTable(
-            id=f'{model_id}-table',
-            style_cell=dict(textAlign='left', maxWidth='500px'),
-            style_table={
-                'overflow-y': 'hidden',
-                'overflow-x': 'auto',
-            },
-            css=[{
-                'selector': '.dash-spreadsheet td div',
-                'rule': '''
-                line-height: 15px,
-                max-height: 30px, min-height: 30px, height: 30px;
-                display: block;
-                overflow-y: hidden;
-                '''
-            }],
-            export_format='csv',
-            columns=[ {'name': i, 'id': i} for i in em_12_reboot_analysis.columns],
-            data=em_12_reboot_analysis.to_dict('records'),
-            tooltip_data=[
-                {column: {'value': str(value), 'type': 'markdown'} for column, value in row.items()}
-                for row in em_12_reboot_analysis.to_dict('records')
-            ],
-            tooltip_duration=None,
-            sort_action='native',
-            sort_mode='single',
-            filter_action='native',
-            sort_by=[{'column_id': 'captured_at', 'direction': 'asc'}],
-            page_size=10,
-        ),
-    ]),
+    html.H4("These are the reboot events we have collected from your event logs", style={'textAlign': 'center'}),
+    cgf.generate_dash_table(em_12_reboot_analysis, 'em_12_reboot_analysis'),
 ])
 
-
-@callback(
-    Output(model_id, "is_open"),
-    [Input(f"{model_id}-open-model", "n_clicks"), Input(f"{model_id}-close-modal", "n_clicks")],
-    [State(model_id, "is_open")],
-)
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        logger.info(f'{model_id} Help button pressed')
-        return not is_open
-    return is_open
 
 @callback(
     Output(f"{model_id}-hidden-output", "children"),

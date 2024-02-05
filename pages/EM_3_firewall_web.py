@@ -7,6 +7,7 @@ from dash import html, dcc, callback, Input, Output, dash_table, callback_contex
 import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+from datetime import datetime, timedelta
 import utils.common_functions as cf
 import utils.common_graph_functions as cgf
 
@@ -14,6 +15,16 @@ from utils.database_class import DatabaseManager
 from utils.logger_config  import configure_logger
 
 logger = configure_logger(__name__)
+
+with DatabaseManager() as db:
+    em_3_firewall_rules = db.read_database_table('em_3_firewall_rules')
+
+with DatabaseManager() as db:
+    em_3_firewall_rules_decommissioned = db.read_database_table('em_3_firewall_rules_decommissioned')
+
+with DatabaseManager() as db:
+    em_3_firewall_enabled = db.read_database_table('em_3_firewall_enabled')
+
 
 def firewall_enabled_subplot(em_3_firewall_enabled):
     try:
@@ -34,21 +45,14 @@ def firewall_enabled_subplot(em_3_firewall_enabled):
         fig.update_yaxes(tickvals=[0, 1], ticktext=['False', 'True'], row=2, col=1)
         fig.update_yaxes(tickvals=[0, 1], ticktext=['False', 'True'], row=2, col=2)
 
-        fig.update_layout(height=600, width=1900, title_text="Firewall Enabled Profile Status Over Time (This should always be enabled)")
+        fig.update_layout(height=600, autosize=True, title_text="Firewall Enabled Profile Status Over Time (This should always be enabled)")
         return(fig)
     except Exception as e:
         return(cgf.set_no_results_found_figure())
 
 
-with DatabaseManager() as db:
-    em_3_firewall_rules = db.read_database_table('em_3_firewall_rules')
-
-with DatabaseManager() as db:
-    em_3_firewall_rules_decommissioned = db.read_database_table('em_3_firewall_rules_decommissioned')
-
-with DatabaseManager() as db:
-    em_3_firewall_enabled = db.read_database_table('em_3_firewall_enabled')
-
+new_firewall_rules = cf.get_fresh_dataframe_data(em_3_firewall_rules, 'created_at')
+decommissioned_firewall_rules = cf.get_fresh_dataframe_data(em_3_firewall_rules_decommissioned, 'removed_at')
 firewall_enabled = firewall_enabled_subplot(em_3_firewall_enabled)
 
 model_id = 'em_3_firewall'
@@ -76,7 +80,30 @@ layout = html.Div([
         'Firewall rules manage the connections to and from your system, they should always be enabled.',
         html.Br(),
         'If you see any of these firewalls disabled it could be a sign something nefarious could be happening on your system.',
-        html.Div([dcc.Graph(figure=firewall_enabled)])],
+        html.Br(),
+        html.Div([dcc.Graph(figure=firewall_enabled)]),
+        ],
+        style={'textAlign': 'center'}
+    ),
+    html.P([
+        'We do not recommend doing anything with your firewall rules but we believe knowing changes on your system can prove to be an effective method for catching nefarious actions.',
+        html.Br(),
+        'If you are unfamiliar with firewalls and what they do the help section can be useful to see exactly what these are doing on your system.',
+        html.Br(),
+        'Microsoft enable many firewall rules by default on their systems many can be disabled by we do not recommend you touch any of these unless you know what you are doing.',
+        html.Br(),
+        html.Br(),
+        html.H4("These are all the new firewall rules we found in the past week"),
+        html.P([
+        'This is more useful after week 1',
+        html.Br(),
+        ],
+        style={'textAlign': 'center'}
+        ),
+        cgf.generate_dash_table(new_firewall_rules, 'new_firewall_rules'),
+        html.H4("These are all the decommissioned firewall rules we found in the past week"),
+        cgf.generate_dash_table(decommissioned_firewall_rules, 'decommissioned_firewall_rules'),
+        ],
         style={'textAlign': 'center'}
     ),
     html.Div([dcc.Graph(figure=firewall_rules_over_time)]),
