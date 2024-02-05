@@ -75,17 +75,8 @@ try:
 except Exception as e:
     logger.error(f'Could not drop duplicates from the software frame, continuing on: {e}')
 
-# import pdb; pdb.set_trace()
-
 df['InstallDate'] = df['InstallDate'].apply(update_install_date)
 
-
-'''
-for index, row in df.iterrows():
-    if row.isna().any():
-        logger.debug(f"Row {index}:")
-        logger.debug(row)
-'''
 with DatabaseManager() as db:
     db.add_new_rows('em_2_software_register', df, ['Publisher', 'DisplayName', 'DisplayVersion'])
     db.remove_old_rows('em_2_software_register', df, ['Publisher', 'DisplayName', 'DisplayVersion'])

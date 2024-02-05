@@ -4,7 +4,7 @@
 # We first need to validate the firewall is enabled or our application will not work.
 # https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-defender-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c
 
-# Check windows advanced firewall before completeing automation.
+# Check windows advanced firewall before completing automation.
 
 import pandas as pd
 import json

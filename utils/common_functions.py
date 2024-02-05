@@ -7,7 +7,8 @@ import time
 import os
 import wmi
 from scapy.all import ARP, Ether, srp
-from datetime import datetime
+from datetime import datetime, timedelta
+import pandas as pd
 
 from .logger_config import configure_logger
 from .database_class import DatabaseManager
@@ -46,7 +47,7 @@ def popen_subprocess_command(command: str) -> None:
     """
     try:
         subprocess.Popen(command, shell=True)
-        logger.info(f"Successfully ran command: {command}")
+        logger.debug(f"Successfully ran command: {command}")
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running subprocess command '{command}': {e}")
         sys.exit(1)
@@ -163,6 +164,18 @@ def check_data_freshness(table, days=7):
             logger.info(f'The data in {table} is not fresh: {result}, continuing with data collection.')
     else:
         logger.info(f'The data in {table} is not fresh: {result}, continuing with data collection.')
+
+
+def get_fresh_dataframe_data(df, column, days=7):
+    try:
+        current_date = datetime.now()
+        one_week_back = current_date - timedelta(days=days)
+        df[column] = pd.to_datetime(df[column])
+        new_devices = df[df[column] > one_week_back]
+        return(new_devices)
+    except Exception as e:
+        logger.error(f'Could not get new data from the dataframe: {e}')
+        return(pd.DataFrame())
 
 
 ################# All below functions are used by and for nmap scanning and processing ###################

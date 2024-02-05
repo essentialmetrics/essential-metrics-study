@@ -200,6 +200,7 @@ layout = html.Div([
         href=f'http://{gateway_url}',
         target="_blank"
     ),
+    html.Div(id=f'{model_id}-dummy-div', style={'display': 'none'}),
     training_modal_graph,
     html.H2('External/ Internal port Management', style={'textAlign': 'center'}),
     html.P([
@@ -259,3 +260,13 @@ def toggle_modal(n1, n2, is_open):
         logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
+
+@callback(
+    Output(f'{model_id}-dummy-div', 'children'),
+    [Input(f"{model_id}-manage", "n_clicks")]
+)
+def toggle_modal(n_clicks):
+    if n_clicks > 0:
+        logger.info(f'{model_id} Connect to router pressed')
+        return ""
+    return ""

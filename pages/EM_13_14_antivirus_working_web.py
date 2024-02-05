@@ -72,14 +72,13 @@ threat_count_over_time = gen_threat_count_over_time(em_14_threat_scanning)
 
 
 layout = html.Div([
-    #dcc.Location(id='url', refresh=False),
     dcc.Interval(
         id='refresh-dashboard',
         interval=1*60*1000,  # in milliseconds, 1*60*1000 for 1 minute
         n_intervals=0
     ),
     html.A(
-        dbc.Button("AntiVirus EICAR Help", id=f"{model_id}-open-model", color="danger", n_clicks=0, style={
+        dbc.Button("AntiVirus EICAR Help", id=f"{model_id}-help", color="danger", n_clicks=0, style={
             'width': '200px',
             'height': '56px',
             'position': 'absolute',
@@ -89,6 +88,7 @@ layout = html.Div([
     href=f'https://www.eicar.org/download-anti-malware-testfile/',
     target="_blank"
     ),
+    html.Div(id=f'{model_id}-dummy-div', style={'display': 'none'}),
     dbc.Button("Manage AntiVirus", id=f"{model_id}-manage", color="success", n_clicks=0, style= {
         'width': '200px',
         'height': '56px',
@@ -147,16 +147,17 @@ def refresh_table(n):
     else:
         return html.H4(f"We found {len(df)} new threats over the past week:", style={'textAlign': 'center'}), cgf.generate_dash_table(df, 'em_14_threats_found_past_week')
 
+
 @callback(
-    Output(model_id, "is_open"),
-    [Input(f"{model_id}-open-model", "n_clicks"), Input(f"{model_id}-close-modal", "n_clicks")],
-    [State(model_id, "is_open")],
+    Output(f'{model_id}-dummy-div', 'children'),
+    [Input(f"{model_id}-help", "n_clicks")]
 )
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        logger.info(f'{model_id} Help button pressed')
-        return not is_open
-    return is_open
+def toggle_modal(n_clicks):
+    if n_clicks > 0:
+        logger.info(f'{model_id} Advice button pressed')
+        return ""
+    return ""
+
 
 @callback(
     Output(f"{model_id}-hidden-output", "children"),

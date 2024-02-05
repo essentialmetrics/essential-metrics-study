@@ -119,6 +119,7 @@ layout = html.Div([
             href=f'https://www.ncsc.gov.uk/guidance/asset-management',
             target="_blank"
     ),
+    html.Div(id=f'{model_id}-dummy-div', style={'display': 'none'}),
     training_modal_graph,
     html.P('A physical asset register is used to track hardware in your internal network. This top register is your named (known devices).', style={'textAlign': 'center'}),
     dcc.Loading(id='loading-metrics-totals', type='default', children=[dcc.Graph(id='metrics-totals')]),
@@ -235,7 +236,6 @@ def combined_callback(n_clicks_ping, n_clicks_scan, n_clicks_delete_selected_row
 
     elif trigger_id == 'delete-selected-rows':
         if n_clicks_delete_selected_rows > 0:
-            #import pdb; pdb.set_trace()
             for i in sorted(selected_rows, reverse=True):
                 mac_to_delete = asset_register[i]['mac']
                 print(mac_to_delete)
@@ -323,3 +323,14 @@ def toggle_modal(n1, n2, is_open):
         logger.info(f'{model_id} Help button pressed')
         return not is_open
     return is_open
+
+
+@callback(
+    Output(f'{model_id}-dummy-div', 'children'),
+    [Input(f"{model_id}-help", "n_clicks")]
+)
+def toggle_modal(n_clicks):
+    if n_clicks > 0:
+        logger.info(f'{model_id} Advice button pressed')
+        return ""
+    return ""

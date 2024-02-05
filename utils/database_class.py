@@ -39,7 +39,6 @@ class DatabaseManager:
             logger.error(f'Could not convert the list to string format, exiting as we cannot add lists to the database: {e}')
             sys.exit(1)
         try:
-            # import pdb; pdb.set_trace()
             df = df.drop_duplicates()
             df = df.astype(str)
         except Exception as e:

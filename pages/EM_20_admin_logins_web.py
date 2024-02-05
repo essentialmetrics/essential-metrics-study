@@ -78,6 +78,12 @@ def generate_admin_logins(df, df_users):
         Tt also skews the graphs and does not add any value as it is not user login tracking sessions, it is only event based data that we can drop here
         '''
         results_df = results_df[results_df['TimeDifference'] > pd.Timedelta(seconds=2)]
+        try:
+            results_df.loc[results_df['LogonType'] == '10', 'LogonType'] = '10 RDP'
+            results_df.loc[results_df['LogonType'] == '3', 'LogonType'] = '3 Network'
+            results_df.loc[results_df['LogonType'] == '2', 'LogonType'] = '2 Interactive'
+        except Exception as e:
+            logger.error(f'Could not generate logon types as part of the figure: {e}')
 
         timeline_fig = px.timeline(results_df, x_start="StartTime", x_end="EndTime", y="User", color="LogonType",
                         title="Login Events Timeline (This does not track sleep or hibernation events so if you use them this will not update until a logout)")
@@ -104,13 +110,18 @@ timeline_fig, percentage_fig = generate_admin_logins(em_20_admin_logins, em_20_u
 model_id = 'em_20_admin_logins'
 
 layout = html.Div([
-    dbc.Button("Admin User Help", id=f"{model_id}-open-model", n_clicks=0, style={
-        'width': '200px',
-        'height': '56px',
-        'position': 'absolute',
-        'top': '10px',
-        'right': '10px'
-    }),
+    html.A(
+        dbc.Button("Admin User Advice", id=f"{model_id}-help", color="danger", n_clicks=0, style={
+            'width': '200px',
+            'height': '56px',
+            'position': 'absolute',
+            'top': '10px',
+            'right': '10px'
+        }),
+        href=f'https://cybersmart.co.uk/blog/whats-the-difference-between-users-and-admin-users/',
+        target="_blank"
+    ),
+    html.Div(id=f'{model_id}-dummy-div', style={'display': 'none'}),
     dbc.Button("Manage Users", id=f"{model_id}-manage", color="success", n_clicks=0, style= {
         'width': '200px',
         'height': '56px',
@@ -166,15 +177,15 @@ layout = html.Div([
 
 
 @callback(
-    Output(model_id, "is_open"),
-    [Input(f"{model_id}-open-model", "n_clicks"), Input(f"{model_id}-close-modal", "n_clicks")],
-    [State(model_id, "is_open")],
+    Output(f'{model_id}-dummy-div', 'children'),
+    [Input(f"{model_id}-help", "n_clicks")]
 )
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        logger.info(f'{model_id} Help button pressed')
-        return not is_open
-    return is_open
+def toggle_modal(n_clicks):
+    if n_clicks > 0:
+        logger.info(f'{model_id} Advice button pressed')
+        return ""
+    return ""
+
 
 @callback(
     Output(f"{model_id}-hidden-output", "children"),
@@ -184,7 +195,7 @@ def launch_exe(n_clicks):
     if n_clicks > 0:
         logger.info(f'{model_id} Manage button pressed')
         try:
-            cf.run_powershell_command('SystemPropertiesRemote')
+            cf.run_powershell_command('control.exe /name Microsoft.UserAccounts')
             return "Launched successfully."
         except Exception as e:
             return f"Error: {e}"
