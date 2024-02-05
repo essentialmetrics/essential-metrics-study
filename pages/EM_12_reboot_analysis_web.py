@@ -83,7 +83,7 @@ def patch_to_reboot_analysis(df, df_v):
         earliest_versions = df.groupby('SoftwareVersion')['StartTime'].min().reset_index()
 
         # Clean the vulnerability dataframe and set the timestamp in a format pd can use
-        installed_updates = df_v[(df_v['Software'].str.contains('Cumulative Update for Windows 11', na=False)) & (df_v['EventIdentifier'] == 'Install Started')]
+        installed_updates = df_v[(df_v['Software'].str.contains('Cumulative Update for Windows 11|Cumulative Update for Windows 10', na=False)) & (df_v['EventIdentifier'] == 'Install Started')]
         installed_updates.loc[:, 'TimeGenerated'] = installed_updates['TimeGenerated'].str[:-4]
         installed_updates.loc[:, 'TimeGenerated'] = pd.to_datetime(installed_updates['TimeGenerated'], format='%Y%m%d%H%M%S.%f')
         installed_updates = installed_updates.drop(columns=['UpdateGUID', 'EventIdentifier'])
