@@ -19,7 +19,7 @@ def configure_logger(name, log_level=LOG_LEVEL):
     logger.addHandler(ch)
 
     # File handler
-    fh = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1000000, backupCount=5, delay=True)
+    fh = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=10000000, backupCount=5, delay=True)
     fh.setLevel(log_level)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
