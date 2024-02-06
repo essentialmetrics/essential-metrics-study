@@ -44,7 +44,6 @@ total_assets_found = read_total_asset_register()
 
 
 def is_ip_live(ip_address, original_dataframe):
-    print(f'Running ARP on {ip_address}')
     arp_request = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(op=1, pdst=ip_address)
     answered, unanswered = srp(arp_request, timeout=1, verbose=False)
     
@@ -52,10 +51,8 @@ def is_ip_live(ip_address, original_dataframe):
         print(f"IP: {received.psrc} - MAC: {received.hwsrc}")
         if received.psrc == ip_address:
             mac_address = received.hwsrc.upper()
-            print(f"MAC found: {mac_address}, MAC in Dataframe: {original_dataframe.loc[original_dataframe['ip'] == ip_address, 'mac'].values}")
             # Compare the discovered MAC address with the MAC addresses in the original DataFrame
             if mac_address in original_dataframe.loc[original_dataframe['ip'] == ip_address, 'mac'].values:
-                #print(f"MAC found: {mac_address}, MAC in Dataframe: {original_dataframe.loc[original_dataframe['ip'] == ip_address, 'mac'].values}")
                 response = ping(ip_address)
                 if isinstance(response, float):
                     return 'Live'
