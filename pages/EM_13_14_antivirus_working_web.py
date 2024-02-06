@@ -54,8 +54,8 @@ def gen_button_color(df):
 
 def gen_threat_count_over_time(df):
     try:
-        df['created_at'] = pd.to_datetime(df['created_at'])
-        threat_count_per_day = df.groupby(df['created_at'].dt.date).size()
+        df['InitialDetectionTime'] = pd.to_datetime(df['InitialDetectionTime'])
+        threat_count_per_day = df.groupby(df['InitialDetectionTime'].dt.date).size()
 
         threat_count_df = threat_count_per_day.reset_index()
         threat_count_df.columns = ['Date', 'Threat Count']

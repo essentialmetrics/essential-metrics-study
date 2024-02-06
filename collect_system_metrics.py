@@ -42,7 +42,7 @@ def hash_ssid(ssid):
     return hashlib.sha256(pi.encode()).hexdigest()
 
 
-def collect_aggregate_count(table):
+def collect_aggregate_count(table, column='created_at'):
     '''
     This function will get the count of some resource in the table based on the date it was created or removed at
     Inputs:
@@ -52,8 +52,8 @@ def collect_aggregate_count(table):
         logger.info(f'Collecting {table} study metrics')
         with DatabaseManager() as db:
             df = db.read_database_table(table)
-        df['created_at'] = pd.to_datetime(df['created_at'])
-        df = df['created_at'].dt.date.value_counts()
+        df[column] = pd.to_datetime(df[column])
+        df = df[column].dt.date.value_counts()
         df = df.reset_index()
         df.columns = ['created_at', 'count']
         
@@ -428,7 +428,7 @@ collect_em_10_metrics()
 collect_em_11_metrics()
 collect_em_12_metrics()
 collect_em_13_metrics()
-collect_aggregate_count('em_14_threat_scanning')
+collect_aggregate_count('em_14_threat_scanning', column='InitialDetectionTime')
 collect_em_15_metrics()
 collect_em_16_metrics()
 collect_em_18_metrics()
