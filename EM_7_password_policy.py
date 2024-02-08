@@ -50,6 +50,7 @@ except Exception as e:
 
 try:
     df = pd.DataFrame([parsed_data['System Access']])
+    df = df.filter(['MaximumPasswordAge', 'MinimumPasswordLength', 'PasswordComplexity', 'PasswordHistorySize', 'LockoutBadCount', 'RequireLogonToChangePassword', 'ForceLogoffWhenHourExpire', 'NewAdministratorName', 'NewGuestName', 'ClearTextPassword', 'LSAAnonymousNameLookup', 'EnableAdminAccount', 'EnableGuestAccount'])
 except Exception as e:
     logger.error(f'Could not load dataframe from sec policy ini file: {e}')
     sys.exit(1)
