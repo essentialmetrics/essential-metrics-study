@@ -242,7 +242,7 @@ def collect_em_11_metrics():
         with DatabaseManager() as db:
             df = db.read_database_table('em_11_vulnerability_patching')
         
-        df = df[(df['Software'].str.contains('Update for Windows 11', na=False))]
+        df = df[(df['Software'].str.contains('Update for Windows 11|Update for Windows 10', na=False))]
         
         with DatabaseManager(database_name='study-metrics.db') as db:
             db.add_new_rows('em_11_vulnerability_patching', df, list(df.keys()))
